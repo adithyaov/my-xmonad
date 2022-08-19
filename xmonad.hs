@@ -104,18 +104,6 @@ main = xmonad $ ewmhFullscreen $ ewmh $ xmobarProp $ conf
         , ((mod1Mask .|. shiftMask, xK_o), smartPrevWindow)
         , copy
         , paste
-        , lineDown
-        , lineUp
-        , search
-        , paraDown
-        , paraUp
-        , -- , esc
-          killLine
-        , movePointBegin
-        , charBack
-        , charForward
-        , wordBack
-        , wordForward
         ]
     keysWorkspaces =
         [ ((m .|. mod1Mask, k), windows $ f i)
