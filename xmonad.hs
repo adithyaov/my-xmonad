@@ -3,28 +3,36 @@ import XMonad.Util.EZConfig
 import XMonad.Util.Loggers
 import XMonad.Util.Paste
 import XMonad.Hooks.ServerMode
+import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.StatusBar
+import XMonad.Hooks.StatusBar.PP
+import XMonad.Hooks.EwmhDesktops
+import XMonad.Util.NamedWindows
 
 import qualified XMonad.StackSet as W
 
 import Data.List (isPrefixOf)
 
+logClassName :: Logger
+logClassName = withWindowSet $ traverse (fmap show . getNameWMClass) . W.peek
+
 smartNextWindow :: X ()
 smartNextWindow = do
-    mtitle <- logTitle
+    mtitle <- logClassName
     case mtitle of
         Nothing -> return ()
         Just title ->
-            if "emacs" `isPrefixOf` title
+            if title == "emacs"
             then sendKey mod1Mask xK_o
             else windows W.focusDown
 
 smartPrevWindow :: X ()
 smartPrevWindow = do
-    mtitle <- logTitle
+    mtitle <- logClassName
     case mtitle of
         Nothing -> return ()
         Just title ->
-            if "emacs" `isPrefixOf` title
+            if title == "emacs"
             then sendKey (mod1Mask .|. shiftMask) xK_o
             else windows W.focusUp
 
@@ -32,11 +40,11 @@ translateIfNotEmacs ::
        (KeyMask, KeySym) -> [(KeyMask, KeySym)] -> ((KeyMask, KeySym), X ())
 translateIfNotEmacs (maskF, keyF) keySeq =
     ( (maskF, keyF)
-    , do mtitle <- logTitle
+    , do mtitle <- logClassName
          case mtitle of
              Nothing -> return ()
              Just title ->
-                 if "emacs" `isPrefixOf` title
+                 if title == "emacs"
                  then sendKey maskF keyF
                  else sequence_ $ uncurry sendKey <$> keySeq)
 
@@ -87,30 +95,35 @@ esc :: ((KeyMask, KeySym), X ())
 esc = translateIfNotEmacs (controlMask, xK_g) [(noModMask, xK_Escape)]
 
 main :: IO ()
-main = xmonad conf
+main = xmonad $ ewmhFullscreen $ ewmh $ xmobarProp $ conf
 
     where
 
+    keysNormal =
+        [ ((mod1Mask, xK_o), smartNextWindow)
+        , ((mod1Mask .|. shiftMask, xK_o), smartPrevWindow)
+        , copy
+        , paste
+        , lineDown
+        , lineUp
+        , search
+        , paraDown
+        , paraUp
+        , -- , esc
+          killLine
+        , movePointBegin
+        , charBack
+        , charForward
+        , wordBack
+        , wordForward
+        ]
+    keysWorkspaces =
+        [ ((m .|. mod1Mask, k), windows $ f i)
+        | (i, k) <- zip (workspaces conf) [xK_1 .. xK_3]
+        , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]
+        ]
     conf =
-        flip
-            additionalKeys
-            [ ((mod1Mask, xK_o), smartNextWindow)
-            , ((mod1Mask .|. shiftMask, xK_o), smartPrevWindow)
-            , copy
-            , paste
-            , lineDown
-            , lineUp
-            , search
-            , paraDown
-            , paraUp
-            -- , esc
-            , killLine
-            , movePointBegin
-            , charBack
-            , charForward
-            , wordBack
-            , wordForward
-            ]
+        flip additionalKeys (keysNormal ++ keysWorkspaces)
             $ def
                   { terminal = "/usr/local/bin/st"
                   , modMask = mod4Mask

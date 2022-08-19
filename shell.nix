@@ -4,14 +4,18 @@ let
 
   inherit (nixpkgs) pkgs;
 
-  f = { mkDerivation, base, lib, xmonad, xmonad-contrib }:
+  f = { mkDerivation, base, lib, X11, xmobar, xmonad
+      , xmonad-contrib
+      }:
       mkDerivation {
         pname = "my-xmonad";
         version = "0.1.0.0";
         src = ./.;
         isLibrary = false;
         isExecutable = true;
-        executableHaskellDepends = [ base xmonad xmonad-contrib ];
+        executableHaskellDepends = [
+          base X11 xmobar xmonad xmonad-contrib
+        ];
         license = "unknown";
         hydraPlatforms = lib.platforms.none;
       };
