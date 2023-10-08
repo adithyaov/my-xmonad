@@ -15,7 +15,7 @@ import qualified XMonad.StackSet as W
 main :: IO ()
 main = do
     dirs <- getDirectories
-    flip launch dirs $ ewmhFullscreen $ ewmh $ xmobarProp $ conf
+    xmonad $ ewmhFullscreen $ ewmh $ xmobarProp $ conf
 
     where
 
