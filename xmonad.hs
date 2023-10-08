@@ -8,6 +8,7 @@ import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Util.NamedWindows
+import XMonad.Layout.Tabbed
 
 import qualified Data.Map as M
 import qualified XMonad.StackSet as W
@@ -24,25 +25,23 @@ main = do
             { terminal = "st"
             , modMask = mod4Mask
             , keys = customKeys
+            , layoutHook = simpleTabbed
             }
 
 customKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
-customKeys _ = M.fromList $
+customKeys conf = M.fromList $
     -- launching and killing programs
-    [ ((mod1Mask .|. shiftMask, xK_0     ), spawn "rofi -show run")
-    , ((controlMask .|. shiftMask, xK_Return ), spawn "rofi -show window")
+    [ ((mod1Mask  .|. shiftMask, xK_Return), spawn "rofi -show run")
+    , ((controlMask  .|. shiftMask, xK_Return), spawn "rofi -show window")
     , ((mod1Mask .|. shiftMask, xK_c        ), kill)
 
     -- move focus up or down the window stack
-    , ((mod1Mask,               xK_Tab   ), windows W.focusDown)
-    , ((mod1Mask .|. shiftMask, xK_Tab   ), windows W.focusUp  )
-
-    -- modifying the window order
-    , ((mod1Mask  .|. shiftMask, xK_Return), windows W.swapMaster)
+    , ((controlMask .|. shiftMask, xK_n   ), windows W.focusDown)
+    , ((controlMask .|. shiftMask, xK_p   ), windows W.focusUp  )
 
     -- resizing the master/slave ratio
-    , ((mod1Mask,               xK_Left       ), sendMessage Shrink)
-    , ((mod1Mask,               xK_Right      ), sendMessage Expand)
+    , ((mod1Mask,               xK_Left       ), windows W.swapUp)
+    , ((mod1Mask,               xK_Right      ), windows W.swapDown)
 
     -- quit, or restart
     -- , ((mod1Mask .|. shiftMask, xK_q     ), io exitSuccess) -- %! Quit xmonad
@@ -60,7 +59,7 @@ customKeys _ = M.fromList $
     ++
     -- mod-{w,e,r} %! Switch to physical/Xinerama screens 1, 2, or 3
     -- mod-shift-{w,e,r} %! Move client to screen 1, 2, or 3
-    [((m .|. mod1Mask, key), screenWorkspace sc >>= flip whenJust (windows . f))
+    [((m .|. mod4Mask, key), screenWorkspace sc >>= flip whenJust (windows . f))
         | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
         , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
