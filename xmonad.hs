@@ -31,8 +31,7 @@ main = do
 customKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 customKeys conf = M.fromList $
     -- launching and killing programs
-    [ ((mod1Mask  .|. shiftMask, xK_Return), spawn "rofi -show run")
-    , ((controlMask  .|. shiftMask, xK_Return), spawn "rofi -show window")
+    [ ((controlMask  .|. shiftMask, xK_Return), spawn "rofi -modes 'window,run' -show window")
     , ((mod1Mask .|. shiftMask, xK_c        ), kill)
 
     -- move focus up or down the window stack
