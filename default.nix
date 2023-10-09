@@ -41,6 +41,8 @@ let
 
     shell = utils.mkShell shellDrv (p: [p.my-xmonad]) true;
 
-in if nixpkgs.lib.inNixShell
-   then shell
-   else (mkHaskellPackages false).my-xmonad
+in (mkHaskellPackages false).my-xmonad
+
+#   if nixpkgs.lib.inNixShell
+#   then shell
+#   else (mkHaskellPackages false).my-xmonad
