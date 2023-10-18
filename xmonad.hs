@@ -35,8 +35,8 @@ customKeys conf = M.fromList $
     , ((mod1Mask .|. shiftMask, xK_c        ), kill)
 
     -- move focus up or down the window stack
-    , ((controlMask,            xK_Right  ), windows W.focusDown)
-    , ((controlMask,            xK_Left   ), windows W.focusUp  )
+    , ((controlMask .|. shiftMask, xK_n   ), windows W.focusDown)
+    , ((controlMask .|. shiftMask, xK_p   ), windows W.focusUp  )
 
     -- resizing the master/slave ratio
     , ((mod1Mask,               xK_Left       ), windows W.swapUp)
