@@ -28,6 +28,15 @@ main = do
             , layoutHook = simpleTabbed
             }
 
+ifElseMoreThanOneWindow :: X () -> X () -> X ()
+ifElseMoreThanOneWindow left right = do
+    state <- get
+    let currentStack = W.stack $ W.workspace $ W.current $ windowset state
+    let numWindows = length $ W.integrate' currentStack
+    if numWindows > 1
+    then left
+    else right
+
 customKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 customKeys conf = M.fromList $
     -- launching and killing programs
@@ -35,8 +44,16 @@ customKeys conf = M.fromList $
     , ((mod1Mask .|. shiftMask, xK_c        ), kill)
 
     -- move focus up or down the window stack
-    , ((controlMask .|. shiftMask, xK_n   ), windows W.focusDown)
-    , ((controlMask .|. shiftMask, xK_p   ), windows W.focusUp  )
+    , ( (controlMask .|. shiftMask, xK_n)
+      , ifElseMoreThanOneWindow
+            (windows W.focusDown)
+            (sendKey (controlMask .|. shiftMask) xK_n)
+      )
+    , ( (controlMask .|. shiftMask, xK_p)
+      , ifElseMoreThanOneWindow
+            (windows W.focusUp)
+            (sendKey (controlMask .|. shiftMask) xK_p)
+      )
 
     -- resizing the master/slave ratio
     , ((mod1Mask,               xK_Left       ), windows W.swapUp)
