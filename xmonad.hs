@@ -9,6 +9,7 @@ import XMonad.Hooks.StatusBar.PP
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Util.NamedWindows
 import XMonad.Layout.Tabbed
+import XMonad.Layout.NoBorders
 
 import qualified Data.Map as M
 import qualified XMonad.StackSet as W
@@ -25,7 +26,7 @@ main = do
             { terminal = "st"
             , modMask = mod4Mask
             , keys = customKeys
-            , layoutHook = simpleTabbed
+            , layoutHook = smartBorders simpleTabbed
             }
 
 ifElseMoreThanOneWindow :: X () -> X () -> X ()
