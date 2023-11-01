@@ -41,7 +41,7 @@ ifElseMoreThanOneWindow left right = do
 customKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 customKeys conf = M.fromList $
     -- launching and killing programs
-    [ ((controlMask  .|. shiftMask, xK_Return), spawn "dmenu_run -l 10 -b")
+    [ ((controlMask  .|. shiftMask, xK_Return), spawn "rofi -modes 'ws-window:rofi_ws_win_switcher.hs,window,run' -show ws-window")
     , ((mod1Mask .|. shiftMask, xK_c        ), kill)
 
     -- move focus up or down the window stack
